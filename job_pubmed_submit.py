@@ -7,6 +7,7 @@ from google.cloud import storage
 import requests
 import json
 import sys
+import time as ti
 
 begin_year = int(sys.argv[1])
 end_year = int(sys.argv[2])
@@ -43,8 +44,8 @@ def run_uploads_year(year_url_total):
             final_string_to_upload = fetch_r.content
             file_path = 'pubmed_data/' + str(year) + '_' + str(month) +'_num_' + str(i)
             upload_to_bucket(file_path, final_string_to_upload)
-            if 'API rate limit exceeded' in final_string_to_upload:
-                sleep(2)
+            if 'API rate limit exceeded' in final_string_to_upload or 'Unable to obtain query' in final_string_to_upload:
+                ti.sleep(2)
             else:
                 break
 
@@ -74,7 +75,7 @@ for year in list_year:
 #print('configurations:')
 #print(sc._conf.getAll())
         
-dist_urls = sc.parallelize(year_url_total).repartition(18) # Otherwise use (sc.defaultParallelism * 3) 
+dist_urls = sc.parallelize(year_url_total).repartition(24) # Otherwise use (sc.defaultParallelism * 3) 
 
 #print('dist_urls:')
 #print(dist_urls)
@@ -86,7 +87,7 @@ print('Partitioning distribution: '+ str(dist_urls.glom().map(len).collect()))
 
 # RDD was distributing unevenly and for some reason could only make it work with dataframe:
 dist_urls_df = dist_urls.toDF(['year','month','url'])
-dist_urls_df = dist_urls_df.repartition(18) #Preferrably 3*number of cores
+dist_urls_df = dist_urls_df.repartition(24) #Preferrably 3*number of cores
 
 print('Partitioning distribution: '+ str(dist_urls_df.rdd.glom().map(len).collect()))
 
