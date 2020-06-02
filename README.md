@@ -31,7 +31,7 @@ Click on your cluster --> web interfaces --> Jupyter Notebook --> upload your no
 First you need to create a folder in a bucket of yours and upload the .py file. Then:
 
 Click on your cluster --> Submit Job --> Choose "PySpark", specify the path to your .py file in GCS, and specify 4 arguments,
-leave the rest empty and click submit.
+leave the rest empty and click "Create".
 
 The 4 arguments, in this order, are:
 1. First year to load the pubmed articles
