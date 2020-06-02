@@ -35,13 +35,18 @@ def run_uploads_year(year_url_total):
     fetch_url = year_url_total[2]
     total_records = year_url_total[3]
     for i in range(0, total_records, 10000):
-        this_fetch = fetch_url+"&retstart="+str(i)
-        #print("Getting this URL: "+this_fetch)
-        fetch_r = requests.post(this_fetch)
-        fetch_r = requests.post(this_fetch)
-        final_string_to_upload = fetch_r.content
-        file_path = input_path + '/' + str(year) + '_' + str(month) +'_num_' + str(i)
-        upload_to_bucket(file_path, final_string_to_upload)
+        while True:
+            this_fetch = fetch_url+"&retstart="+str(i)
+            #print("Getting this URL: "+this_fetch)
+            fetch_r = requests.post(this_fetch)
+            fetch_r = requests.post(this_fetch)
+            final_string_to_upload = fetch_r.content
+            file_path = 'pubmed_data/' + str(year) + '_' + str(month) +'_num_' + str(i)
+            upload_to_bucket(file_path, final_string_to_upload)
+            if 'API rate limit exceeded' in final_string_to_upload:
+                sleep(2)
+            else:
+                break
 
 
 
@@ -66,10 +71,24 @@ for year in list_year:
         year_url_total.append(temp_list)
         print(str(year)+'_'+str(month))
 
-
+#print('configurations:')
+#print(sc._conf.getAll())
         
-dist_urls = sc.parallelize(year_url_total).repartition(12) # This assumes 4 nodes, otherwise use (sc.defaultParallelism * 3) 
+dist_urls = sc.parallelize(year_url_total).repartition(24) # This assumes 4 nodes, otherwise use (sc.defaultParallelism * 3) 
 
+#print('dist_urls:')
+#print(dist_urls)
 
-dist_urls.foreach(lambda year_url_total: run_uploads_year(year_url_total))
+print('partitions rdd:')
+print(dist_urls.getNumPartitions())
+
+print('Partitioning distribution: '+ str(dist_urls.glom().map(len).collect()))
+
+# RDD was distributing unevenly and for some reason could only make it work with dataframe:
+dist_urls_df = dist_urls.toDF(['year','month','url'])
+dist_urls_df = dist_urls_df.repartition(4)
+
+print('Partitioning distribution: '+ str(dist_urls_df.rdd.glom().map(len).collect()))
+
+dist_urls_df.rdd.foreach(lambda year_url_total: run_uploads_year(year_url_total))
 
