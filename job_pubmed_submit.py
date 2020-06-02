@@ -43,10 +43,10 @@ def run_uploads_year(year_url_total):
             fetch_r = requests.post(this_fetch)
             final_string_to_upload = fetch_r.content
             file_path = 'pubmed_data/' + str(year) + '_' + str(month) +'_num_' + str(i)
-            upload_to_bucket(file_path, final_string_to_upload)
             if 'API rate limit exceeded' in final_string_to_upload or 'Unable to obtain query' in final_string_to_upload:
                 ti.sleep(2)
             else:
+                upload_to_bucket(file_path, final_string_to_upload)
                 break
 
 
