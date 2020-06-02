@@ -2,7 +2,7 @@
 This is a spark job to pull pubmed data (abstracts of all published articles) into GCS with 
 parallel downloads and uploads.  I describe here how to do this for beginners.
 
-There are two ways to run this job, either submit the .py file in dataproc, or use the notebook in dataproc.
+There are two ways to run this job in this tutorial, either submit the .py file in dataproc, or use the notebook in dataproc.
 
 Either way, we first create the cluster in Google Cloud, run this in google cloud shell, 
 or install gcloud and run in your terminal:
@@ -39,7 +39,3 @@ The 4 arguments, in this order, are:
 1. Your bucket name
 1. Your path in that bucket, where the files will be stored.
 
-## Notes
-
-TODO: Add retries on the downloads.  Most of the time the job runs fine, but occasionally pubmed does not return any data.
-I was running this 5 years at a time.
