@@ -13,7 +13,7 @@ gcloud beta dataproc clusters create choose_your_cluster_name --optional-compone
 ```
 
 You need to replace three parameters in that command: 
-- your cluster name
+- your desired cluster name
 - your google cloud project_id
 - your google cloud storage bucket name
 
