@@ -39,6 +39,9 @@ The 4 arguments, in this order, are:
 1. Your bucket name
 1. Your path in that bucket, where the files will be stored.
 
+## Notes:
+Occasionally it seems the cluster runs into memory issues so no new files are being written to GCS.  In this case you can  create a new cluster and re run the job (it will ignore existing files in GCS and continue with the rest).  Will try to merge a fix soon.
+
 ## Reference:
 
 https://www.ncbi.nlm.nih.gov/books/NBK25500/
