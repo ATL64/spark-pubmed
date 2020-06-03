@@ -39,3 +39,6 @@ The 4 arguments, in this order, are:
 1. Your bucket name
 1. Your path in that bucket, where the files will be stored.
 
+## Reference:
+
+https://www.ncbi.nlm.nih.gov/books/NBK25500/
