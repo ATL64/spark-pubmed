@@ -18,11 +18,9 @@ input_path = sys.argv[4]
 spark = SparkSession.builder.appName('Pull pubmed data into GCS bucket').getOrCreate()
 sc = spark.sparkContext
 
-def upload_to_bucket(blob_name, string):
+def upload_to_bucket(blob_name, string, bucket):
     """ Upload data to a bucket"""
-
-    gcs_client = storage.Client()
-    bucket = gcs_client.bucket(input_bucket)
+  
     blob = bucket.blob(blob_name)
     blob.upload_from_string(string)
 
@@ -30,23 +28,28 @@ def upload_to_bucket(blob_name, string):
     return blob.public_url
 
 
-def run_uploads_year(year_url_total):
+def run_uploads_year(year_url_total, input_bucket, input_path):
+    gcs_client = storage.Client()
+    bucket = gcs_client.bucket(input_bucket)
     year = year_url_total[0]
     month = year_url_total[1]
     fetch_url = year_url_total[2]
     total_records = year_url_total[3]
     for i in range(0, total_records, 10000):
         while True:
+            file_path = input_path + '/' + str(year) + '_' + str(month) + '_num_' + str(i)            
+            file_exists = storage.Blob(bucket=bucket, name=file_path).exists(gcs_client)
+            if file_exists:
+                break
             this_fetch = fetch_url+"&retstart="+str(i)
             #print("Getting this URL: "+this_fetch)
             fetch_r = requests.post(this_fetch)
             fetch_r = requests.post(this_fetch)
             final_string_to_upload = fetch_r.content
-            file_path = 'pubmed_data/' + str(year) + '_' + str(month) +'_num_' + str(i)
             if 'API rate limit exceeded' in final_string_to_upload or 'Unable to obtain query' in final_string_to_upload:
                 ti.sleep(2)
             else:
-                upload_to_bucket(file_path, final_string_to_upload)
+                upload_to_bucket(file_path, final_string_to_upload, bucket)
                 break
 
 
@@ -91,5 +94,5 @@ dist_urls_df = dist_urls_df.repartition(24) #Preferrably 3*number of cores
 
 print('Partitioning distribution: '+ str(dist_urls_df.rdd.glom().map(len).collect()))
 
-dist_urls_df.rdd.foreach(lambda year_url_total: run_uploads_year(year_url_total))
+dist_urls_df.rdd.foreach(lambda year_url_total: run_uploads_year(year_url_total, input_bucket, input_path))
 
