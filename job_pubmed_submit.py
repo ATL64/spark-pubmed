@@ -43,13 +43,14 @@ def run_uploads_year(year_url_total, input_bucket, input_path):
                 break
             this_fetch = fetch_url+"&retstart="+str(i)
             #print("Getting this URL: "+this_fetch)
-            fetch_r = requests.post(this_fetch)
-            fetch_r = requests.post(this_fetch)
+            fetch_r = requests.post(this_fetch) #TODO: Use with() to make sure the connection is closed for next request
             final_string_to_upload = fetch_r.content
             if 'API rate limit exceeded' in final_string_to_upload or 'Unable to obtain query' in final_string_to_upload:
                 ti.sleep(2)
+                del final_string_to_upload
             else:
                 upload_to_bucket(file_path, final_string_to_upload, bucket)
+                del final_string_to_upload
                 break
 
 
