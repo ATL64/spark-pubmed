@@ -17,7 +17,7 @@ You need to replace three parameters in that command:
 - your google cloud project_id
 - your google cloud storage bucket name
 
-Also, if you want to use more than 4 worker nodes, you need to change that parameter as well.
+Also, if you want to use more than 4 worker nodes, you need to change that parameter as well, but I would not recommend it since in my experimentation it seems that more than this puts too much load on NCBI backend.
 
 
 ## Notebook
