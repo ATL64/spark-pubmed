@@ -26,6 +26,8 @@ To use the notebook, go to dataproc in your google cloud console in your browser
 
 Click on your cluster --> web interfaces --> Jupyter Notebook --> upload your notebook or copy the contents in a new one.
 
+Please note the notebook is not always up to date, so check that the functions are the same as in the .py file.
+
 ## Submit Job
 
 First you need to create a folder in a bucket of yours and upload the .py file. Then:
