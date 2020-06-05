@@ -81,7 +81,7 @@ for year in list_year:
 #print('configurations:')
 #print(sc._conf.getAll())
         
-dist_urls = sc.parallelize(year_url_total).repartition(16) # Otherwise use (sc.defaultParallelism * 3) 
+dist_urls = sc.parallelize(year_url_total).repartition(12) # Otherwise use (sc.defaultParallelism * 3) 
 
 #print('dist_urls:')
 #print(dist_urls)
@@ -93,7 +93,7 @@ print('Partitioning distribution: '+ str(dist_urls.glom().map(len).collect()))
 
 # RDD was distributing unevenly and for some reason could only make it work with dataframe:
 dist_urls_df = dist_urls.toDF(['year','month','url'])
-dist_urls_df = dist_urls_df.repartition(16) #Preferrably 3*number of cores
+dist_urls_df = dist_urls_df.repartition(12) #Preferrably 3*number of cores
 
 print('Partitioning distribution: '+ str(dist_urls_df.rdd.glom().map(len).collect()))
 
